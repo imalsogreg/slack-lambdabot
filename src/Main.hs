@@ -13,6 +13,7 @@ import Control.DeepSeq (NFData)
 import Control.Lens ((^.), Getter, to, use)
 import Control.Monad.IO.Class (liftIO)
 import Data.Functor (void)
+import Data.Functor.Identity (Identity(..))
 import Data.Maybe (fromMaybe)
 import Data.Monoid ((<>))
 import Data.Text (Text, dropWhile, pack, unpack, stripPrefix)
@@ -118,7 +119,7 @@ parseCommand = try parseEval <|> parseType where
 lambdabot :: Command -> IO String
 lambdabot command = do
   let request = void $ lambdabotMain modulesInfo
-        [onStartupCmds :=> [unpack $ (command ^. prefix) <> " " <> (command ^. expression)]]
+        [onStartupCmds :=> Identity [(unpack $ (command ^. prefix) <> " " <> (command ^. expression))]]
   (response, _) <- capture request
   return response
 
